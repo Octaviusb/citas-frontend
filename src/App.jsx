@@ -13,6 +13,11 @@ function App() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingAppointment, setEditingAppointment] = useState(null)
   const [professionals, setProfessionals] = useState([])
+  const [showMedicalRecords, setShowMedicalRecords] = useState(false)
+  const [showMedicalRecordModal, setShowMedicalRecordModal] = useState(false)
+  const [selectedClient, setSelectedClient] = useState(null)
+  const [medicalRecords, setMedicalRecords] = useState([])
+  const [clients, setClients] = useState([])
 
   useEffect(() => {
     fetchServices()
@@ -89,6 +94,36 @@ function App() {
     }
   }
 
+  const fetchMedicalRecords = async () => {
+    try {
+      const { mockMedicalRecords } = await import('./data/mockData')
+      setMedicalRecords(mockMedicalRecords)
+    } catch (error) {
+      console.error('Error al cargar historias clínicas:', error)
+    }
+  }
+
+  const fetchClients = async () => {
+    try {
+      const { mockClients } = await import('./data/mockData')
+      setClients(mockClients)
+    } catch (error) {
+      console.error('Error al cargar clientes:', error)
+    }
+  }
+
+  const handleViewMedicalRecord = (client) => {
+    setSelectedClient(client)
+    setShowMedicalRecordModal(true)
+  }
+
+  const handleCreateMedicalRecord = () => {
+    // Simular creación de registro médico
+    alert('Registro médico guardado correctamente')
+    setShowMedicalRecordModal(false)
+    fetchMedicalRecords()
+  }
+
   const handleEditAppointment = (appointment) => {
     setEditingAppointment(appointment)
     setShowEditModal(true)
@@ -129,8 +164,10 @@ function App() {
     setShowLoginModal(false)
     setShowAppointmentModal(false)
     setShowEditModal(false)
+    setShowMedicalRecordModal(false)
     setSelectedService(null)
     setEditingAppointment(null)
+    setSelectedClient(null)
     // NO resetear el usuario para mantener la sesión
   }
 
@@ -171,26 +208,49 @@ function App() {
               <>
                 <span style={{ color: 'white', marginRight: '1rem' }}>Bienvenido, {user.nombre}</span>
                 {user.rol === 'admin' && (
-                  <button 
-                    onClick={() => {
-                      console.log('Botón clickeado, showAdminPanel actual:', showAdminPanel)
-                      setShowAdminPanel(!showAdminPanel)
-                      if (!showAdminPanel) {
-                        fetchAppointments()
-                      }
-                    }}
-                    style={{ 
-                      padding: '12px 24px', 
-                      backgroundColor: showAdminPanel ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)', 
-                      color: 'white', 
-                      border: '2px solid rgba(255,255,255,0.3)', 
-                      borderRadius: '12px', 
-                      cursor: 'pointer',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    {showAdminPanel ? 'Ocultar' : 'Ver'} Panel
-                  </button>
+                  <>
+                    <button 
+                      onClick={() => {
+                        setShowAdminPanel(!showAdminPanel)
+                        setShowMedicalRecords(false)
+                        if (!showAdminPanel) {
+                          fetchAppointments()
+                        }
+                      }}
+                      style={{ 
+                        padding: '12px 24px', 
+                        backgroundColor: showAdminPanel ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)', 
+                        color: 'white', 
+                        border: '2px solid rgba(255,255,255,0.3)', 
+                        borderRadius: '12px', 
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {showAdminPanel ? 'Ocultar' : 'Ver'} Citas
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowMedicalRecords(!showMedicalRecords)
+                        setShowAdminPanel(false)
+                        if (!showMedicalRecords) {
+                          fetchMedicalRecords()
+                          fetchClients()
+                        }
+                      }}
+                      style={{ 
+                        padding: '12px 24px', 
+                        backgroundColor: showMedicalRecords ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)', 
+                        color: 'white', 
+                        border: '2px solid rgba(255,255,255,0.3)', 
+                        borderRadius: '12px', 
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {showMedicalRecords ? 'Ocultar' : 'Ver'} Historias
+                    </button>
+                  </>
                 )}
                 <button 
                   onClick={handleLogout}
@@ -453,6 +513,127 @@ function App() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Panel de Historia Clínica */}
+      {user && user.rol === 'admin' && showMedicalRecords && (
+        <div style={{ 
+          backgroundColor: 'white', 
+          margin: '2rem auto', 
+          maxWidth: '1200px', 
+          borderRadius: '16px', 
+          boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+          overflow: 'hidden'
+        }}>
+          <div style={{ 
+            background: 'linear-gradient(to right, #059669, #10b981)', 
+            color: 'white', 
+            padding: '1.5rem 2rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>Historia Clínica</h2>
+            <button 
+              onClick={() => fetchMedicalRecords()}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.3)',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Actualizar
+            </button>
+          </div>
+          
+          <div style={{ padding: '2rem' }}>
+            {clients.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#9ca3af' }}>📋</div>
+                <p>No hay pacientes registrados</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
+                {clients.map((client) => {
+                  const clientRecords = medicalRecords.filter(record => record.cliente_id === client.id)
+                  return (
+                    <div key={client.id} style={{
+                      backgroundColor: '#f8fafc',
+                      borderRadius: '12px',
+                      padding: '1.5rem',
+                      border: '1px solid #e2e8f0'
+                    }}>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#1f2937', margin: '0 0 0.5rem 0' }}>
+                          {client.nombre}
+                        </h3>
+                        <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: '0 0 0.5rem 0' }}>
+                          Doc: {client.documento} | Tel: {client.telefono}
+                        </p>
+                        <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0 }}>
+                          Edad: {new Date().getFullYear() - new Date(client.fecha_nacimiento).getFullYear()} años
+                        </p>
+                      </div>
+                      
+                      <div style={{ marginBottom: '1rem' }}>
+                        <p style={{ fontSize: '0.8rem', color: '#059669', fontWeight: 'bold' }}>
+                          Registros: {clientRecords.length}
+                        </p>
+                        {client.alergias && (
+                          <p style={{ fontSize: '0.8rem', color: '#dc2626' }}>
+                            Alergias: {client.alergias}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          onClick={() => handleViewMedicalRecord(client)}
+                          style={{
+                            flex: 1,
+                            padding: '0.75rem',
+                            backgroundColor: '#059669',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '0.9rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          Ver Historia
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedClient(client)
+                            setShowMedicalRecordModal(true)
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '0.75rem',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '0.9rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          Nuevo Registro
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -966,6 +1147,249 @@ function App() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Historia Clínica */}
+      {showMedicalRecordModal && selectedClient && (
+        <div style={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0, 
+          backgroundColor: 'rgba(0,0,0,0.6)', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          zIndex: 1000 
+        }}>
+          <div style={{ 
+            backgroundColor: 'white', 
+            borderRadius: '16px', 
+            padding: '2rem', 
+            width: '100%', 
+            maxWidth: '800px', 
+            margin: '1rem',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.25)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#059669', margin: 0 }}>Historia Clínica - {selectedClient.nombre}</h3>
+              <button 
+                onClick={closeModals} 
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '1.5rem', 
+                  cursor: 'pointer', 
+                  color: '#6b7280',
+                  padding: '0.5rem',
+                  borderRadius: '50%'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Información del paciente */}
+            <div style={{ 
+              backgroundColor: '#f0f9ff', 
+              padding: '1rem', 
+              borderRadius: '12px', 
+              marginBottom: '1.5rem',
+              border: '1px solid #e0f2fe'
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.9rem' }}>
+                <div><strong>Documento:</strong> {selectedClient.documento}</div>
+                <div><strong>Teléfono:</strong> {selectedClient.telefono}</div>
+                <div><strong>Edad:</strong> {new Date().getFullYear() - new Date(selectedClient.fecha_nacimiento).getFullYear()} años</div>
+                <div><strong>Email:</strong> {selectedClient.email}</div>
+                <div><strong>Alergias:</strong> {selectedClient.alergias}</div>
+                <div><strong>Antecedentes:</strong> {selectedClient.antecedentes}</div>
+              </div>
+            </div>
+
+            {/* Historial de registros */}
+            <div style={{ marginBottom: '2rem' }}>
+              <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1f2937' }}>Historial Médico</h4>
+              {medicalRecords.filter(record => record.cliente_id === selectedClient.id).map((record) => (
+                <div key={record.id} style={{
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  padding: '1rem',
+                  marginBottom: '1rem'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <strong style={{ color: '#059669' }}>{new Date(record.fecha).toLocaleDateString()}</strong>
+                    <span style={{ fontSize: '0.9rem', color: '#6b7280' }}>{record.profesional_nombre}</span>
+                  </div>
+                  <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}><strong>Motivo:</strong> {record.motivo_consulta}</p>
+                  <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}><strong>Diagnóstico:</strong> {record.diagnostico}</p>
+                  <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}><strong>Tratamiento:</strong> {record.tratamiento}</p>
+                  {record.observaciones && (
+                    <p style={{ margin: '0.5rem 0', fontSize: '0.9rem', fontStyle: 'italic', color: '#6b7280' }}>
+                      <strong>Observaciones:</strong> {record.observaciones}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            {/* Formulario nuevo registro */}
+            <div style={{ borderTop: '2px solid #e2e8f0', paddingTop: '1.5rem' }}>
+              <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1f2937' }}>Nuevo Registro</h4>
+              <form onSubmit={(e) => {
+                e.preventDefault()
+                handleCreateMedicalRecord()
+              }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem' }}>Motivo de consulta *</label>
+                    <input
+                      type="text"
+                      style={{ 
+                        width: '100%', 
+                        padding: '0.75rem', 
+                        border: '1px solid #d1d5db', 
+                        borderRadius: '8px', 
+                        fontSize: '1rem',
+                        boxSizing: 'border-box'
+                      }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem' }}>Presión arterial</label>
+                    <input
+                      type="text"
+                      placeholder="120/80"
+                      style={{ 
+                        width: '100%', 
+                        padding: '0.75rem', 
+                        border: '1px solid #d1d5db', 
+                        borderRadius: '8px', 
+                        fontSize: '1rem',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem' }}>Síntomas</label>
+                  <textarea
+                    rows="3"
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.75rem', 
+                      border: '1px solid #d1d5db', 
+                      borderRadius: '8px', 
+                      fontSize: '1rem',
+                      boxSizing: 'border-box',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem' }}>Examen físico</label>
+                  <textarea
+                    rows="3"
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.75rem', 
+                      border: '1px solid #d1d5db', 
+                      borderRadius: '8px', 
+                      fontSize: '1rem',
+                      boxSizing: 'border-box',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem' }}>Diagnóstico *</label>
+                  <input
+                    type="text"
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.75rem', 
+                      border: '1px solid #d1d5db', 
+                      borderRadius: '8px', 
+                      fontSize: '1rem',
+                      boxSizing: 'border-box'
+                    }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem' }}>Tratamiento *</label>
+                  <textarea
+                    rows="3"
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.75rem', 
+                      border: '1px solid #d1d5db', 
+                      borderRadius: '8px', 
+                      fontSize: '1rem',
+                      boxSizing: 'border-box',
+                      resize: 'vertical'
+                    }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '500', marginBottom: '0.5rem' }}>Observaciones</label>
+                  <textarea
+                    rows="2"
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.75rem', 
+                      border: '1px solid #d1d5db', 
+                      borderRadius: '8px', 
+                      fontSize: '1rem',
+                      boxSizing: 'border-box',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                  <button 
+                    type="button" 
+                    onClick={closeModals} 
+                    style={{ 
+                      flex: 1, 
+                      padding: '0.75rem', 
+                      border: '2px solid #d1d5db', 
+                      backgroundColor: 'white', 
+                      color: '#374151', 
+                      borderRadius: '12px', 
+                      cursor: 'pointer',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    style={{ 
+                      flex: 1, 
+                      padding: '0.75rem', 
+                      background: 'linear-gradient(to right, #059669, #10b981)', 
+                      color: 'white', 
+                      border: 'none', 
+                      borderRadius: '12px', 
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    Guardar Registro
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
