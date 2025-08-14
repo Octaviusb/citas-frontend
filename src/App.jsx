@@ -46,13 +46,12 @@ function App() {
   }
 
   const handleLoginSubmit = async (email, password) => {
-    // Simulación de login - en producción conectar con backend
-    if (email === 'admin@sistema.com' && password === 'password') {
-      setUser({ email, rol: 'admin', nombre: 'Administrador' })
+    if (email === 'admin@clinica.com' && password === 'admin123') {
+      setUser({ email, rol: 'admin', nombre: 'Dr. Martinez' })
       setShowLoginModal(false)
       fetchAppointments()
     } else {
-      alert('Credenciales incorrectas')
+      alert('Usuario o contraseña incorrectos')
     }
   }
 
@@ -101,7 +100,7 @@ function App() {
       // Simular actualización
       await new Promise(resolve => setTimeout(resolve, 500))
       
-      alert('Cita actualizada exitosamente (DEMO)')
+      alert('Cita actualizada correctamente')
       setShowEditModal(false)
       setEditingAppointment(null)
       fetchAppointments()
@@ -117,7 +116,7 @@ function App() {
         // Simular eliminación
         await new Promise(resolve => setTimeout(resolve, 300))
         
-        alert('Cita eliminada exitosamente (DEMO)')
+        alert('Cita cancelada correctamente')
         fetchAppointments()
       } catch (error) {
         console.error('Error:', error)
@@ -157,15 +156,15 @@ function App() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f0f9ff' }}>
       {/* Header */}
-      <header style={{ background: 'linear-gradient(to right, #4f46e5, #7c3aed, #2563eb)', color: 'white', padding: '3rem 1rem' }}>
+      <header style={{ background: 'linear-gradient(to right, #0369a1, #0284c7, #0ea5e9)', color: 'white', padding: '3rem 1rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 style={{ fontSize: '3rem', fontWeight: 'bold', margin: '0 0 0.5rem 0' }}>
-              Centro de Servicios Profesionales
+              Centro Médico San Rafael
             </h1>
-            <p style={{ fontSize: '1.2rem', opacity: 0.9, margin: 0 }}>✨ Atencion especializada y personalizada ✨</p>
+            <p style={{ fontSize: '1.2rem', opacity: 0.9, margin: 0 }}>Excelencia médica desde 2008 | Especialistas certificados</p>
           </div>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             {user ? (
@@ -190,7 +189,7 @@ function App() {
                       fontWeight: 'bold'
                     }}
                   >
-                    📋 {showAdminPanel ? 'Ocultar' : 'Ver'} Citas
+                    {showAdminPanel ? 'Ocultar' : 'Ver'} Panel
                   </button>
                 )}
                 <button 
@@ -205,7 +204,7 @@ function App() {
                     fontWeight: 'bold'
                   }}
                 >
-                  🚪 Cerrar Sesión
+                  Salir
                 </button>
               </>
             ) : (
@@ -222,7 +221,7 @@ function App() {
                     fontWeight: 'bold'
                   }}
                 >
-                  🔐 Iniciar Sesión
+                  Acceso Personal
                 </button>
                 <button 
                   onClick={() => handleScheduleAppointment()}
@@ -237,7 +236,7 @@ function App() {
                     boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                   }}
                 >
-                  📅 Agendar Cita
+                  Reservar Cita
                 </button>
               </>
             )}
@@ -250,8 +249,8 @@ function App() {
 
 
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '1rem' }}>Nuestros Servicios Especializados</h2>
-          <p style={{ fontSize: '1.2rem', color: '#6b7280', maxWidth: '800px', margin: '0 auto' }}>Ofrecemos una amplia gama de servicios profesionales diseñados para tu bienestar y salud</p>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '1rem' }}>Servicios Médicos</h2>
+          <p style={{ fontSize: '1.2rem', color: '#6b7280', maxWidth: '800px', margin: '0 auto' }}>Contamos con especialistas certificados y equipos de última tecnología para brindarte la mejor atención médica</p>
         </div>
 
         {/* Servicios */}
@@ -277,7 +276,7 @@ function App() {
                   borderRadius: '9999px',
                   marginTop: '0.5rem'
                 }}>
-                  ⏱️ {service.duracion}min
+                  {service.duracion} minutos
                 </span>
               </div>
               
@@ -309,7 +308,7 @@ function App() {
                   e.target.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)'
                 }}
               >
-                📅 Agendar Cita
+                Reservar Cita
               </button>
             </div>
           ))}
@@ -334,7 +333,7 @@ function App() {
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>📋 Panel de Administracion - Citas</h2>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>Panel de Administración</h2>
             <button 
               onClick={() => fetchAppointments()}
               style={{
@@ -347,14 +346,14 @@ function App() {
                 fontSize: '0.9rem'
               }}
             >
-              🔄 Actualizar
+              Actualizar
             </button>
           </div>
           
           <div style={{ padding: '2rem' }}>
             {appointments.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📅</div>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#9ca3af' }}>📋</div>
                 <p>No hay citas registradas</p>
               </div>
             ) : (
@@ -431,7 +430,7 @@ function App() {
                                 fontWeight: 'bold'
                               }}
                             >
-                              ✏️ Editar
+                              Editar
                             </button>
                             <button
                               onClick={() => handleDeleteAppointment(appointment.id)}
@@ -446,7 +445,7 @@ function App() {
                                 fontWeight: 'bold'
                               }}
                             >
-                              🗑️ Eliminar
+                              Eliminar
                             </button>
                           </div>
                         </td>
@@ -484,7 +483,7 @@ function App() {
             boxShadow: '0 25px 50px rgba(0,0,0,0.25)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4f46e5', margin: 0 }}>🔐 Iniciar Sesión</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4f46e5', margin: 0 }}>Acceso al Sistema</h3>
               <button 
                 onClick={closeModals} 
                 style={{ 
@@ -511,7 +510,7 @@ function App() {
                 <input
                   name="email"
                   type="email"
-                  defaultValue="admin@sistema.com"
+                  defaultValue="admin@clinica.com"
                   style={{ 
                     width: '100%', 
                     padding: '0.75rem', 
@@ -528,7 +527,7 @@ function App() {
                 <input
                   name="password"
                   type="password"
-                  defaultValue="password"
+                  defaultValue="admin123"
                   style={{ 
                     width: '100%', 
                     padding: '0.75rem', 
@@ -605,7 +604,7 @@ function App() {
             boxShadow: '0 25px 50px rgba(0,0,0,0.25)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4f46e5', margin: 0 }}>📅 Agendar Cita</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4f46e5', margin: 0 }}>Reservar Cita Médica</h3>
               <button 
                 onClick={closeModals} 
                 style={{ 
@@ -630,7 +629,7 @@ function App() {
                 marginBottom: '1.5rem',
                 border: '1px solid #e0e7ff'
               }}>
-                <h4 style={{ fontWeight: 'bold', color: '#312e81', fontSize: '1.1rem', marginBottom: '0.5rem' }}>✨ {selectedService.nombre}</h4>
+                <h4 style={{ fontWeight: 'bold', color: '#312e81', fontSize: '1.1rem', marginBottom: '0.5rem' }}>{selectedService.nombre}</h4>
                 <p style={{ color: '#4338ca', fontSize: '0.9rem', marginBottom: '1rem' }}>{selectedService.descripcion}</p>
                 <div style={{ 
                   display: 'flex', 
@@ -640,8 +639,8 @@ function App() {
                   padding: '0.75rem', 
                   borderRadius: '12px' 
                 }}>
-                  <span>💰 Precio: <strong style={{ color: '#059669' }}>{formatPrice(selectedService.precio)}</strong></span>
-                  <span>⏱️ Duracion: <strong style={{ color: '#2563eb' }}>{selectedService.duracion} min</strong></span>
+                  <span>Valor: <strong style={{ color: '#059669' }}>{formatPrice(selectedService.precio)}</strong></span>
+                  <span>Duración: <strong style={{ color: '#2563eb' }}>{selectedService.duracion} min</strong></span>
                 </div>
               </div>
             )}
@@ -799,7 +798,7 @@ function App() {
             boxShadow: '0 25px 50px rgba(0,0,0,0.25)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4f46e5', margin: 0 }}>✏️ Editar Cita</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4f46e5', margin: 0 }}>Modificar Cita</h3>
               <button 
                 onClick={closeModals} 
                 style={{ 
